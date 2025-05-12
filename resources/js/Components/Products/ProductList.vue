@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
+import { IProduct  } from '@/Types';
 
-// Interface for a single product
-interface IProduct {
-  id: number;
-  name: string;
-  description: string | null;
-  price: string; // Or number
-  status: string;
-  category: {
-    id: number;
-    name: string;
-  };
-  created_at: string; // Or Date
-}
 
 /**
  * Component props.

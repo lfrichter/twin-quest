@@ -25,6 +25,7 @@
         "vue-tsc": "^2.2.10"
     },
     "dependencies": {
-        "pinia": "^3.0.2"
+        "pinia": "^3.0.2",
+        "ziggy-js": "^2.5.2"
     }
 }

@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch } from 'vue';
-import { useFiltersStore } from '@/stores/filters';
-
-// Interface for filter state
-interface IFilterState {
-  name?: string;
-  category_id?: number | null;
-  status?: string;
-}
-
-// Interface for a category
-interface ICategory {
-  id: number;
-  name: string;
-}
+import { useFiltersStore } from '@/Stores/filters';
+import { ICategory, IFilterState,  } from '@/Types';
 
 /**
  * Component props.
