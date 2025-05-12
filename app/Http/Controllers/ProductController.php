@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Requests\ProductFilterRequest; // Assuming namespace
-use App\Http\Resources\ProductResource; // Assuming namespace
-use App\Models\Category; // Assuming namespace
-use App\Models\Product; // Assuming namespace
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response; // Or Illuminate\Http\JsonResponse depending on specifics
+namespace App\Http\Controllers;
+
+use App\Http\Requests\ProductFilterRequest;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -16,9 +18,9 @@ class ProductController extends Controller
      * Display a paginated and filterable list of products.
      *
      * @param  ProductFilterRequest  $request  The request object containing validated filter data.
-     * @return AnonymousResourceCollection|InertiaResponse Returns JSON resource collection for API requests or Inertia response for web requests.
+     * @return ProductCollection|InertiaResponse Returns JSON resource collection for API requests or Inertia response for web requests.
      */
-    public function index(ProductFilterRequest $request): AnonymousResourceCollection|InertiaResponse
+    public function index(ProductFilterRequest $request): ProductCollection|InertiaResponse
     {
         // Get the validated filter parameters
         $validated = $request->validated(); // Get all validated data first
@@ -50,13 +52,7 @@ class ProductController extends Controller
 
         // If it's an API request, return JSON
         if ($request->expectsJson()) {
-            return ProductResource::collection($products)
-                ->additional([
-                    'meta' => [
-                        // Include active filters in the meta section for API consumers
-                        'filters' => $filters,
-                    ],
-                ]);
+            return new ProductCollection($products);
         }
 
         // Fetch categories for the filter dropdown (consider caching)
