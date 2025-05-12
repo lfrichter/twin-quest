@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    # força arquitetura ARM64 (opcional, o image oficial já tem suporte)
+    platform: linux/arm64/v8
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      # conta padrão
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_assessment_luis
+    volumes:
+      # persiste dados entre reinícios
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
