@@ -16,21 +16,19 @@ class ProductCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => [
-                'first' => $this->url(1),
-                'last' => $this->url($this->lastPage()),
-                'prev' => $this->previousPageUrl(),
-                'next' => $this->nextPageUrl(),
-            ],
+        ];
+    }
+
+    /**
+     * Get additional data that should be returned with the resource array.
+     *
+     * @param  Request  $request
+     * @return array<string, mixed>
+     */
+    public function with($request): array
+    {
+        return [
             'meta' => [
-                'current_page' => $this->currentPage(),
-                'from' => $this->firstItem(),
-                'last_page' => $this->lastPage(),
-                'links' => $this->linkCollection()->toArray(),
-                'path' => $this->path(),
-                'per_page' => $this->perPage(),
-                'to' => $this->lastItem(),
-                'total' => $this->total(),
                 'filters' => $request->input('filter', []),
             ],
         ];

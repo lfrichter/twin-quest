@@ -14,6 +14,8 @@ class ProductSeeder extends Seeder
 
         $statuses = ['active', 'inactive', 'discontinued'];
 
+        Product::truncate();
+
         // Create 50 products
         for ($i = 1; $i <= 50; $i++) {
             Product::create([
