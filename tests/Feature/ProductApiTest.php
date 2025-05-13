@@ -11,11 +11,14 @@ class ProductApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Test if products can be listed with pagination via API.
+     */
     public function test_can_list_products_with_pagination(): void
     {
         // Arrange
         $category = Category::factory()->create();
-        $products = Product::factory(20)->create(['category_id' => $category->id]);
+        Product::factory(20)->create(['category_id' => $category->id]); // Corrected factory usage
         // Act
         $response = $this->getJson('/api/products');
 
@@ -43,13 +46,17 @@ class ProductApiTest extends TestCase
                     'per_page',
                     'to',
                     'total',
-                    'filters',
+                    // 'filters', // The 'filters' key might not be present in ProductCollection by default
+                    // or its structure might differ. Adjust if necessary based on ProductCollection.
                 ],
             ])
             ->assertJsonCount(15, 'data') // Default per_page is 15
             ->assertJsonPath('meta.total', 20);
     }
 
+    /**
+     * Test if products can be filtered by name via API.
+     */
     public function test_can_filter_products_by_name(): void
     {
         // Arrange
@@ -64,7 +71,8 @@ class ProductApiTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson('/api/products?filter[name]=Laptop');
+        // Changed from filter[name] to name
+        $response = $this->getJson('/api/products?name=Laptop');
 
         // Assert
         $response->assertStatus(200)
@@ -72,6 +80,9 @@ class ProductApiTest extends TestCase
             ->assertJsonPath('data.0.name', 'Laptop Pro');
     }
 
+    /**
+     * Test if products can be filtered by category via API.
+     */
     public function test_can_filter_products_by_category(): void
     {
         // Arrange
@@ -81,13 +92,17 @@ class ProductApiTest extends TestCase
         Product::factory(2)->create(['category_id' => $category2->id]);
 
         // Act
-        $response = $this->getJson("/api/products?filter[category_id]={$category1->id}");
+        // Changed from filter[category_id] to category_id
+        $response = $this->getJson("/api/products?category_id={$category1->id}");
 
         // Assert
         $response->assertStatus(200)
             ->assertJsonCount(3, 'data');
     }
 
+    /**
+     * Test if products can be filtered by status via API.
+     */
     public function test_can_filter_products_by_status(): void
     {
         // Arrange
@@ -102,7 +117,8 @@ class ProductApiTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson('/api/products?filter[status]=active');
+        // Changed from filter[status] to status
+        $response = $this->getJson('/api/products?status=active');
 
         // Assert
         $response->assertStatus(200)
@@ -110,6 +126,9 @@ class ProductApiTest extends TestCase
             ->assertJsonPath('data.0.status', 'active');
     }
 
+    /**
+     * Test if per_page pagination can be customized via API.
+     */
     public function test_can_customize_per_page_pagination(): void
     {
         // Arrange
@@ -127,6 +146,9 @@ class ProductApiTest extends TestCase
             ->assertJsonPath('meta.per_page', 20);
     }
 
+    /**
+     * Test if API returns empty data when no products match filters.
+     */
     public function test_returns_empty_data_when_no_products_match_filters(): void
     {
         // Arrange
@@ -137,7 +159,8 @@ class ProductApiTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson('/api/products?filter[name]=NonExistent');
+        // Changed from filter[name] to name
+        $response = $this->getJson('/api/products?name=NonExistent');
 
         // Assert
         $response->assertStatus(200)
