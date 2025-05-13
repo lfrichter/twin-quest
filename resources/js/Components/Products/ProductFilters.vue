@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-ignore
 import { defineProps, defineEmits, ref, watch } from 'vue';
 import { useFiltersStore } from '@/Stores/filters';
 import { ICategory, IFilterState,  } from '@/Types';
@@ -32,7 +33,7 @@ const localFilters = ref({ ...filtersStore.filters });
 //   emit('update:filters', newFilters);
 // }, { deep: true });
 
-watch(localFilters, (newFilters) => {
+watch(localFilters, (newFilters: IFilterState) => {
   emit('update:filters', newFilters);
   filtersStore.updateFilters(newFilters);
 }, { deep: true });
