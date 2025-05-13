@@ -3,7 +3,6 @@ import { route } from 'ziggy-js'
 // @ts-ignore
 import { ref, watch, onMounted, computed } from 'vue';
 import { router, Head } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
 import ProductFilters from '@/Components/Products/ProductFilters.vue';
 import ProductList from '@/Components/Products/ProductList.vue';
 import Pagination from '@/Components/Pagination.vue';

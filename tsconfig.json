@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["resources/js/*"],
-      "vue": ["node_modules/vue/dist/vue.esm-bundler"]
+      // "vue": ["node_modules/vue/dist/vue.esm-bundler"]
     },
     "types": ["vite/client","ziggy-js"],
     "allowJs": true,
@@ -29,7 +29,9 @@
     "resources/js/**/*.ts",
     "resources/js/**/*.d.ts",
     "resources/js/**/*.tsx",
-    "resources/js/**/*.vue"
+    "resources/js/**/*.vue",
+    "tests/Js/Pages/Products/Index.spec.ts",
+    "tests/Js/Components/Products/ProductFilters.spec.ts"
   ],
   "exclude": ["node_modules"]
 }
