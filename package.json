@@ -3,7 +3,12 @@
     "type": "module",
     "scripts": {
         "build": "vite build && vite build --ssr",
-        "dev": "vite"
+        "dev": "vite",
+        "typecheck": "vue-tsc --noEmit",
+        "watch:types": "vue-tsc --noEmit --watch",
+        "watch:build": "vite build --watch",
+        "watch:build:ssr": "vite build --ssr --watch",
+        "watch:build:all": "concurrently \"npm:watch:build\" \"npm:watch:build:ssr\""
     },
     "devDependencies": {
         "@inertiajs/vue3": "^2.0",
