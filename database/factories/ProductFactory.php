@@ -24,9 +24,11 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
+        $name = $this->faker->unique()->words(2, true);
+
         return [
-            'name' => $this->faker->unique()->word,
-            'description' => $this->faker->sentence,
+            'name' => "Product {$name}",
+            'description' => "Description of {$this->faker->sentence}",
             'price' => $this->faker->randomFloat(2, 10, 1000),
             'status' => $this->faker->randomElement(['active', 'inactive', 'discontinued']),
             'category_id' => null,

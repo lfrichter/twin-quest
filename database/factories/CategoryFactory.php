@@ -28,7 +28,7 @@ class CategoryFactory extends Factory
         $name = $this->faker->unique()->word();
 
         return [
-            'name' => $name,
+            'name' => "Category {$name}",
             'slug' => Str::slug($name),
             'created_at' => now(),
             'updated_at' => now(),

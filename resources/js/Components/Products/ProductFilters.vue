@@ -10,7 +10,8 @@ import { ICategory, IFilterState,  } from '@/Types';
  * @property {ICategory[]} categories - List of categories for filter dropdown.
  */
 const props = defineProps<{
-  filters: IFilterState;
+  // filters: IFilterState;
+  modelValue: IFilterState;
   categories: ICategory[];
 }>();
 
@@ -19,24 +20,35 @@ const props = defineProps<{
  * @event update:filters - Emitted when filter values change.
  */
 const emit = defineEmits<{
-  (e: 'update:filters', value: IFilterState): void;
+  (e: 'update:modelValue', value: IFilterState): void; // Changed from update:filters
+  (e: 'reset-filters'): void;
+  // (e: 'update:filters', value: IFilterState): void;
 }>();
 
-const filtersStore = useFiltersStore();
-const localFilters = ref({ ...filtersStore.filters });
+// const filtersStore = useFiltersStore();
+// const localFilters = ref({ ...filtersStore.filters });
 // Local reactive state for form inputs, initialized from props
 // const localFilters = ref<IFilterState>({ ...props.filters });
+const localFilters = ref<IFilterState>({ ...props.modelValue });
 
 // Watch for changes in localFilters and emit update event
 // This is a basic implementation; consider debouncing for text inputs in a real app
-// watch(localFilters, (newFilters) => {
-//   emit('update:filters', newFilters);
-// }, { deep: true });
+watch(() => props.modelValue, (newModelValue: IFilterState) => {
+  // Check to prevent potential infinite loops if objects are structurally the same
+  if (JSON.stringify(localFilters.value) !== JSON.stringify(newModelValue)) {
+    localFilters.value = { ...newModelValue };
+  }
+}, { deep: true });
 
 watch(localFilters, (newFilters: IFilterState) => {
-  emit('update:filters', newFilters);
-  filtersStore.updateFilters(newFilters);
+  emit('update:modelValue', newFilters);
+  // emit('update:filters', newFilters);
 }, { deep: true });
+
+// watch(localFilters, (newFilters: IFilterState) => {
+//   emit('update:filters', newFilters);
+//   filtersStore.updateFilters(newFilters);
+// }, { deep: true });
 
 // Function to reset filters (example)
 // function resetFilters() {

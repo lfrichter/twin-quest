@@ -22,7 +22,7 @@ const props = defineProps<{
       <li v-for="product in props.products" :key="product.id" class="p-4">
         <h3 class="text-md font-semibold">{{ product.name }}</h3>
         <p class="text-sm text-gray-600">Price: {{ product.price }}</p>
-        <p class="text-sm text-gray-600">Category: {{ product.category.name }}</p>
+        <p class="text-sm text-gray-600">Category: {{ product.category?.name }}</p>
         <p class="text-sm text-gray-600">Status: {{ product.status }}</p>
       </li>
     </ul>
