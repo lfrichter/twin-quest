@@ -6,6 +6,7 @@
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -22,6 +23,13 @@
     "forceConsistentCasingInFileNames": true,
     // "noImplicitAny": false,
   },
-  "include": ["resources/js/**/*", "vite.config.ts"],
+  "include": [
+    "resources/js/**/*",
+    "vite.config.ts",
+    "resources/js/**/*.ts",
+    "resources/js/**/*.d.ts",
+    "resources/js/**/*.tsx",
+    "resources/js/**/*.vue"
+  ],
   "exclude": ["node_modules"]
 }
