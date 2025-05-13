@@ -4,11 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use Faker\Generator as Faker;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    public function run(): void
+    public function run(Faker $faker): void
     {
         $categories = Category::all();
 
@@ -18,13 +19,17 @@ class ProductSeeder extends Seeder
 
         // Create 50 products
         for ($i = 1; $i <= 50; $i++) {
-            Product::create([
-                'name' => 'Product '.$i,
-                'description' => 'Description of Product '.$i,
-                'price' => rand(10, 1000) + (rand(0, 99) / 100),
-                'category_id' => $categories->random()->id,
-                'status' => $statuses[array_rand($statuses)],
-            ]);
+            $name = $faker->unique()->words(2, true);
+            Product::firstOrCreate(
+                [
+                    'name' => "Product {$name}",
+                ],
+                [
+                    'description' => "Description of {$faker->sentence}",
+                    'price' => rand(10, 1000) + (rand(0, 99) / 100),
+                    'category_id' => $categories->random()->id,
+                    'status' => $statuses[array_rand($statuses)],
+                ]);
         }
     }
 }

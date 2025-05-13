@@ -22,9 +22,9 @@ class ProductFilterRequest extends FormRequest
         return [
             'page' => 'sometimes|integer|min:1',
             'per_page' => 'sometimes|integer|min:1|max:100',
-            'filter.name' => 'sometimes|string|max:255',
-            'filter.category_id' => 'sometimes|integer|exists:categories,id',
-            'filter.status' => ['sometimes', 'string', Rule::in(['active', 'inactive', 'discontinued'])],
+            'name' => 'sometimes|nullable|string|max:255',
+            'category_id' => 'sometimes|nullable|integer|exists:categories,id',
+            'status' => ['sometimes', 'nullable', 'string', Rule::in(['active', 'inactive', 'discontinued'])],
         ];
     }
 
@@ -36,8 +36,8 @@ class ProductFilterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'filter.category_id.exists' => 'The selected category is invalid.',
-            'filter.status.in' => 'The selected status is invalid.',
+            'category_id.exists' => 'The selected category is invalid.',
+            'status.in' => 'The selected status is invalid.',
         ];
     }
 }

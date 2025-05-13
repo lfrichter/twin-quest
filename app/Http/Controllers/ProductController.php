@@ -22,33 +22,34 @@ class ProductController extends Controller
      */
     public function index(ProductFilterRequest $request): ProductCollection|InertiaResponse
     {
+        $query = Product::query()->with('category');
+
         // Get the validated filter parameters
         $validated = $request->validated(); // Get all validated data first
-        $filters = $validated['filter'] ?? [];
+
+        // / Filter by name if 'name' is provided and not null
+        $query->when($validated['name'] ?? null, function ($q, $name) {
+            // Apply the name filter using the scope defined in the Product model
+            $q->filterByName($name);
+        });
+
+        // Filter by category_id if 'category_id' is provided and not null
+        $query->when($validated['category_id'] ?? null, function ($q, $categoryId) {
+            // Apply the category filter using the scope
+            $q->filterByCategory($categoryId);
+        });
+
+        // Filter by status if 'status' is provided and not null
+        $query->when($validated['status'] ?? null, function ($q, $status) {
+            // Apply the status filter using the scope
+            $q->filterByStatus($status);
+        });
+
+        // Determine items per page from validated data or default to 15
         $perPage = $validated['per_page'] ?? 15;
 
-        // Start the query with eager loading of the category relationship
-        $query = Product::with('category');
-
-        // Apply filters using conditional clauses for cleaner code
-        $query->when(isset($filters['name']), function ($q) use ($filters) {
-            $q->filterByName($filters['name']);
-        });
-
-        $query->when(isset($filters['category_id']), function ($q) use ($filters) {
-            $q->filterByCategory($filters['category_id']);
-        });
-
-        $query->when(isset($filters['status']), function ($q) use ($filters) {
-            $q->filterByStatus($filters['status']);
-        });
-
-        // Execute the query with pagination, preserving query string parameters
+        // Paginate the results and ensure filter parameters are appended to pagination links
         $products = $query->paginate($perPage)->withQueryString();
-
-        // Note: $products->appends(['filters' => $filters]); is redundant if using withQueryString()
-        // and the filters are already part of the request's query string.
-        // withQueryString() handles appending all current query string parameters.
 
         // If it's an API request, return JSON
         if ($request->expectsJson()) {
@@ -61,13 +62,15 @@ class ProductController extends Controller
             ->orderBy('name') // Good practice to order dropdowns
             ->get();
 
-        // If it's a web request via Inertia, return the view
+        $activeFilters = [
+            'name' => $validated['name'] ?? null,
+            'category_id' => $validated['category_id'] ?? null,
+            'status' => $validated['status'] ?? null,
+        ];
+
         return Inertia::render('Products/Index', [
-            // Use the resource collection for consistent data structure
             'products' => ProductResource::collection($products),
-            // Pass the current filters to populate the filter form state
-            'filters' => $filters,
-            // Pass categories for the filter dropdown
+            'filters' => $activeFilters,
             'categories' => $categories->toArray(),
         ]);
     }
