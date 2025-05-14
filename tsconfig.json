@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": "./resources/js",
+    "outDir": "./public/js",
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -19,7 +21,7 @@
       // "vue": ["node_modules/vue/dist/vue.esm-bundler"]
     },
     "types": ["vite/client","ziggy-js"],
-    "allowJs": true,
+    "allowJs": false,
     "forceConsistentCasingInFileNames": true,
     // "noImplicitAny": false,
   },
@@ -30,8 +32,8 @@
     "resources/js/**/*.d.ts",
     "resources/js/**/*.tsx",
     "resources/js/**/*.vue",
-    "tests/Js/Pages/Products/Index.spec.ts",
-    "tests/Js/Components/Products/ProductFilters.spec.ts"
+    "tests/Js/Pages/**/*.ts",
+    "tests/Js/Components/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "vendor", "public/js"]
 }
