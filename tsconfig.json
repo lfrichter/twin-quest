@@ -18,7 +18,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["resources/js/*"],
-      // "vue": ["node_modules/vue/dist/vue.esm-bundler"]
     },
     "types": ["vite/client","ziggy-js"],
     "allowJs": false,
