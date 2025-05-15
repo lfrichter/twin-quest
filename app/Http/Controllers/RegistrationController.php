@@ -2,36 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Registration;
+use App\Http\Requests\StoreRegistrationRequest;
+use App\Models\Registration; // Assuming your model is App\Models\Registration
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class RegistrationController extends Controller
 {
     /**
-     * Show the form for creating a new resource.
+     * Display the registration form.
      */
-    public function create(): Response
+    public function create(): InertiaResponse
     {
-        // Returns the Inertia view for the registration form
+        // Renders the Vue component located at resources/js/Pages/Registrations/Create.vue
         return Inertia::render('Registrations/Create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created registration in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreRegistrationRequest $request): RedirectResponse
     {
-        // Basic storage logic without validation for now
-        // Validation will be added later
+        try {
+            DB::transaction(function () use ($request) {
+                Registration::create([
+                    'name' => $request->validated()['name'],
+                    'email' => $request->validated()['email'],
+                    'password' => Hash::make($request->validated()['password']),
+                ]);
+            });
 
-        $data = $request->only(['name', 'email']);
+            return redirect()->route('registrations.create')
+                ->with('success', 'Registro realizado com sucesso!'); // Flash message for success
 
-        Registration::create($data);
+        } catch (\Throwable $th) {
+            // Log the error or handle it as needed
+            // For simplicity, redirecting back with a generic error
+            // In a real application, you might want more specific error handling
+            report($th); // Log the exception
 
-        // Redirect back to the create form with a success message
-        return redirect()->route('registrations.create')->with('success', 'Registration submitted successfully!');
+            return redirect()->back()
+                ->withInput() // Send back the old input
+                ->with('error', 'Ocorreu um erro durante o registro. Por favor, tente novamente.');
+        }
     }
 }
