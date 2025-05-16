@@ -26,9 +26,7 @@ class StoreRegistrationRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:registrations,email'],
-            'password' => ['required', 'string', Password::min(8)],
-            // If you add a password_confirmation field in the frontend, add 'confirmed' rule here:
-            // 'password' => ['required', 'string', Password::min(8), 'confirmed'],
+            'password' => ['required', 'string', Password::min(8), 'confirmed'],
         ];
     }
 }

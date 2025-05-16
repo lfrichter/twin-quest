@@ -1,23 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRegistrationRequest;
-use App\Models\Registration; // Assuming your model is App\Models\Registration
+use App\Models\Registration;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request; // Added for Request
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator; // Added for Validator
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class RegistrationController extends Controller
 {
     /**
-     * Display the registration form.
+     * Show the form for creating a new registration.
      */
     public function create(): InertiaResponse
     {
-        // Renders the Vue component located at resources/js/Pages/Registrations/Create.vue
         return Inertia::render('Registrations/Create');
     }
 
@@ -26,27 +30,34 @@ class RegistrationController extends Controller
      */
     public function store(StoreRegistrationRequest $request): RedirectResponse
     {
-        try {
-            DB::transaction(function () use ($request) {
-                Registration::create([
-                    'name' => $request->validated()['name'],
-                    'email' => $request->validated()['email'],
-                    'password' => Hash::make($request->validated()['password']),
-                ]);
-            });
+        DB::transaction(function () use ($request) {
+            Registration::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+        });
 
-            return redirect()->route('registrations.create')
-                ->with('success', 'Registro realizado com sucesso!'); // Flash message for success
+        return redirect()->route('registrations.create')
+            ->with('success', 'Registration successful!');
+    }
 
-        } catch (\Throwable $th) {
-            // Log the error or handle it as needed
-            // For simplicity, redirecting back with a generic error
-            // In a real application, you might want more specific error handling
-            report($th); // Log the exception
+    /**
+     * Validate if the email already exists in the registrations table.
+     */
+    public function validateEmail(Request $request): JsonResponse
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'string', 'email', 'max:255'],
+        ]);
 
-            return redirect()->back()
-                ->withInput() // Send back the old input
-                ->with('error', 'Ocorreu um erro durante o registro. Por favor, tente novamente.');
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        $exists = Registration::where('email', $request->email)->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 }
