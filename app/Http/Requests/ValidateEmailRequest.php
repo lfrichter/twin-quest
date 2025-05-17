@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
-class StoreRegistrationRequest extends FormRequest
+class ValidateEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        // Allow all guests to attempt registration
+        // Allow all users to make this request, or add specific authorization logic if needed.
         return true;
     }
 
@@ -24,11 +25,6 @@ class StoreRegistrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
             'email' => [
                 'required',
                 'string',
@@ -36,25 +32,22 @@ class StoreRegistrationRequest extends FormRequest
                 'max:255',
                 'unique:registrations,email',
             ],
-            'password' => [
-                'required',
-                'string',
-                Password::min(8),
-                'confirmed',
-            ],
         ];
     }
 
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
-            'name.required' => 'The name field is required.',
             'email.required' => 'The email field is required.',
+            'email.string' => 'The email must be a string.',
             'email.email' => 'Please enter a valid email address.',
+            'email.max' => 'The email may not be greater than 255 characters.',
             'email.unique' => 'This email address is already taken.',
-            'password.required' => 'The password field is required.',
-            'password.min' => 'The password must be at least 8 characters.',
-            'password.confirmed' => 'The password confirmation does not match.',
         ];
     }
 }
