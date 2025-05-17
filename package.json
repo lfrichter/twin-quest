@@ -35,6 +35,8 @@
     },
     "dependencies": {
         "pinia": "^3.0.2",
+        "vee-validate": "4.15.0",
+        "yup": "^1.6.1",
         "ziggy-js": "^2.5.2"
     }
 }

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { route } from 'ziggy-js'
+import TestLayout from '@/Layouts/TestLayout.vue';
+import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 // @ts-ignore
 import { ref, watch, onMounted, computed } from 'vue';
 import { router, Head } from '@inertiajs/vue3';
@@ -135,49 +137,56 @@ onMounted(() => {
   <div>
     <Head title="Product Listing" />
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
-          <!-- Product Filters -->
-          <ProductFilters
-            v-if="safeCategories.length > 0"
-            :categories="safeCategories"
-            v-model="filterForm"
-            @reset-filters="resetFilters"
-            class="mb-6"
-            aria-label="Product filter controls"
-          />
+    <TestLayout>
+      <template #logo>
+          <AuthenticationCardLogo />
+      </template>
 
-          <!-- Loading Indicator -->
-          <div v-if="isLoading" class="text-center py-4" role="status" aria-live="polite">
-            <p>Loading products...</p>
-          </div>
-
-          <!-- Product List and Pagination -->
-          <div v-else>
-            <ProductList
-              v-if="safeProducts.data && safeProducts.data.length > 0"
-              :products="safeProducts.data"
+      <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+            <!-- Product Filters -->
+            <ProductFilters
+              v-if="safeCategories.length > 0"
+              :categories="safeCategories"
+              v-model="filterForm"
+              @reset-filters="resetFilters"
+              class="mb-6"
+              aria-label="Product filter controls"
             />
 
-            <!-- Pagination -->
-            <Pagination
-              v-if="safeProducts.meta?.total > 0 && safeProducts.data?.length > 0"
-              :links="safeProducts.meta.links || []"
-              @navigate="handlePageChange"
-              class="mt-6"
-              aria-label="Pagination controls"
-            />
-            <div
-              v-else-if="safeProducts.data?.length === 0"
-              class="text-center py-4 text-gray-500"
-              role="alert"
-            >
-              No products found matching your criteria.
+            <!-- Loading Indicator -->
+            <div v-if="isLoading" class="text-center py-4" role="status" aria-live="polite">
+              <p>Loading products...</p>
+            </div>
+
+            <!-- Product List and Pagination -->
+            <div v-else>
+              <ProductList
+                v-if="safeProducts.data && safeProducts.data.length > 0"
+                :products="safeProducts.data"
+              />
+
+              <!-- Pagination -->
+              <Pagination
+                v-if="safeProducts.meta?.total > 0 && safeProducts.data?.length > 0"
+                :links="safeProducts.meta.links || []"
+                @navigate="handlePageChange"
+                class="mt-6"
+                aria-label="Pagination controls"
+              />
+              <div
+                v-else-if="safeProducts.data?.length === 0"
+                class="text-center py-4 text-gray-500"
+                role="alert"
+              >
+                No products found matching your criteria.
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+    </TestLayout>
   </div>
 </template>
