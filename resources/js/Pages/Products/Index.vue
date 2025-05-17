@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { route } from 'ziggy-js'
 import TestLayout from '@/Layouts/TestLayout.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 // @ts-ignore
-import { ref, watch, onMounted, computed } from 'vue';
-import { router, Head } from '@inertiajs/vue3';
+import { watch, onMounted, computed } from 'vue';
+import { Head } from '@inertiajs/vue3';
 import ProductFilters from '@/Components/Products/ProductFilters.vue';
 import ProductList from '@/Components/Products/ProductList.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { ICategory, IPaginatedProducts, IFilterState } from '@/Types';
+import { useProductFilterStore } from '@/Stores/useProductFilterStore';
 
 // Define props with TypeScript interfaces and provide default values to prevent null errors
 const props = withDefaults(defineProps<{
@@ -21,115 +21,41 @@ const props = withDefaults(defineProps<{
   categories: () => []
 });
 
-// Debug props
-console.log('Props received:', props);
+// Initialize and use the Pinia store
+const productFilterStore = useProductFilterStore();
 
 // Make safe versions of props
-const safeFilters = computed(() => props.filters || { name: '', status: '' });
+// const safeFilters = computed(() => props.filters || { name: '', status: '' });
 const safeProducts = computed(() => props.products || { data: [], meta: { links: [] } });
 const safeCategories = computed(() => props.categories || []);
 
-// Reactive filter form, initialized with safe props.filters
-const filterForm = ref<IFilterState>({
-  name: safeFilters.value.name || '',
-  category_id: safeFilters.value.category_id,
-  status: safeFilters.value.status || '',
+const filterFormForComponent = computed<IFilterState>({
+  get: () => productFilterStore.currentFilters,
+  set: (newValues: IFilterState) => {
+    // When ProductFilters updates its model, this calls the store action
+    // which handles debouncing and fetching.
+    productFilterStore.updateAndFetchFilters(newValues);
+  }
 });
 
-// Loading state for UI feedback
-const isLoading = ref(false);
+const isLoading = computed(() => productFilterStore.isLoadingStatus);
 
-// Debounce utility for API calls - Definido antes de ser usado
-function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), delay);
-  };
-}
-
-/**
- * Fetches products based on filter state.
- * @param options - Navigation options for Inertia.js
- */
-const fetchProducts = (options: { preserveScroll?: boolean; page?: number } = {}) => {
-  isLoading.value = true;
-  console.log('Fetching products with filters:', filterForm.value, 'Page:', options.page);
-  try {
-    const url = route('products.index');
-    console.log('URL generated:', url);
-    router.get(url, { ...filterForm.value, page: options.page },
-    {
-      preserveState: true,
-      preserveScroll: options.preserveScroll || false,
-      replace: true,
-      onFinish: () => {
-        isLoading.value = false;
-        console.log('Fetch completed, isLoading:', isLoading.value);
-      },
-    });
-  } catch (e) {
-    console.error("Erro ao usar a função route():", e); // Captura erro específico aqui
-  }
-};
-
-// Debounced fetch for filter changes - Usando a função definida acima
-const debouncedFetchProducts = debounce(fetchProducts, 500);
-
-/**
- * Handles pagination navigation.
- * @param url - Pagination URL
- */
 const handlePageChange = (url: string | null) => {
-  if (!url) return;
-  isLoading.value = true;
-  console.log('Navigating to pagination URL:', url);
-  router.get(
-    url,
-    { ...filterForm.value },
-    {
-      preserveState: true,
-      preserveScroll: false,
-      replace: false,
-      onFinish: () => {
-        isLoading.value = false;
-        console.log('Pagination fetch completed');
-      },
-    }
-  );
+  productFilterStore.handlePageChange(url);
 };
 
-/**
- * Resets filters to default values.
- */
-const resetFilters = () => {
-  filterForm.value = {
-    name: '',
-    category_id: undefined,
-    status: '',
-  };
-  console.log('Filters reset:', filterForm.value);
-  fetchProducts(); // Chamar diretamente fetchProducts após reset
+const resetFiltersInComponent = () => {
+  productFilterStore.resetFilters();
 };
 
-// Watch filterForm for changes
-watch(
-  filterForm,
-  () => {
-    console.log('Filter form changed:', filterForm.value);
-    debouncedFetchProducts({ preserveScroll: true });
-  },
-  { deep: true }
-);
+watch(() => props.filters, (newServerFilters: IFilterState | undefined) => {
+  if (newServerFilters) {
+    productFilterStore.initializeFilters(newServerFilters as IFilterState);
+  }
+}, { deep: true });
 
-// Sync filterForm with props.filters on mount
 onMounted(() => {
-  filterForm.value = {
-    name: safeFilters.value.name || '',
-    category_id: safeFilters.value.category_id,
-    status: safeFilters.value.status || '',
-  };
-  console.log('Mounted, filterForm initialized:', filterForm.value);
+  productFilterStore.initializeFilters(props.filters as IFilterState);
 });
 </script>
 
@@ -144,45 +70,47 @@ onMounted(() => {
 
       <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
+          <div class="bg-white dark:bg-gray-100 overflow-hidden shadow-xl sm:rounded-lg p-6">
             <!-- Product Filters -->
             <ProductFilters
               v-if="safeCategories.length > 0"
               :categories="safeCategories"
-              v-model="filterForm"
-              @reset-filters="resetFilters"
+              v-model="filterFormForComponent"
+              @reset-filters="resetFiltersInComponent"
               class="mb-6"
               aria-label="Product filter controls"
             />
 
-            <!-- Loading Indicator -->
-            <div v-if="isLoading" class="text-center py-4" role="status" aria-live="polite">
-              <p>Loading products...</p>
-            </div>
-
-            <!-- Product List and Pagination -->
-            <div v-else>
-              <ProductList
-                v-if="safeProducts.data && safeProducts.data.length > 0"
-                :products="safeProducts.data"
-              />
-
-              <!-- Pagination -->
-              <Pagination
-                v-if="safeProducts.meta?.total > 0 && safeProducts.data?.length > 0"
-                :links="safeProducts.meta.links || []"
-                @navigate="handlePageChange"
-                class="mt-6"
-                aria-label="Pagination controls"
-              />
-              <div
-                v-else-if="safeProducts.data?.length === 0"
-                class="text-center py-4 text-gray-500"
-                role="alert"
-              >
-                No products found matching your criteria.
+            <Transition name="fade" mode="out-in">
+              <!-- Loading Indicator -->
+              <div v-if="isLoading" class="text-center py-4" role="status" aria-live="polite">
+                <p>Loading products...</p>
               </div>
-            </div>
+              <!-- Product List and Pagination -->
+              <div v-else>
+                <!-- Product List -->
+                <ProductList
+                  v-if="safeProducts.data && safeProducts.data.length > 0"
+                  :products="safeProducts.data"
+                />
+                <!-- Pagination -->
+                <Pagination
+                  v-if="safeProducts.meta?.total > 0 && safeProducts.data?.length > 0"
+                  :links="safeProducts.meta.links || []"
+                  @navigate="handlePageChange"
+                  class="mt-6"
+                  aria-label="Pagination controls"
+                />
+                <div
+                  v-else-if="safeProducts.data?.length === 0"
+                  class="text-center py-4 text-gray-500"
+                  role="alert"
+                >
+                  No products found matching your criteria.
+                </div>
+              </div>
+            </Transition>
+
           </div>
         </div>
       </div>
@@ -190,3 +118,53 @@ onMounted(() => {
     </TestLayout>
   </div>
 </template>
+
+
+<style scoped>
+/* Transition for fading between loading/content states */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Transition for the product list appearance/disappearance and height changes */
+.list-transition-enter-active,
+.list-transition-leave-active {
+  transition: all 0.5s ease-in-out; /* Animate opacity, max-height, and transform */
+  overflow: hidden; /* Important for max-height transition */
+}
+
+.list-transition-enter-from {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(20px); /* Optional: slight upward movement from bottom */
+}
+.list-transition-enter-to {
+  max-height: 1500px; /* Adjust if your content can exceed this height. Needs to be larger than the maximum possible content height. */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.list-transition-leave-from {
+  max-height: 1500px; /* Adjust to match enter-to */
+  opacity: 1;
+  transform: translateY(0);
+}
+.list-transition-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(20px); /* Optional: slight downward movement */
+}
+
+/* Optional: Add some styling to the wrappers if needed, though Tailwind classes are mostly used */
+.product-list-wrapper {
+  /* Styles for the div wrapping ProductList and Pagination */
+}
+.no-products-message {
+  /* Styles for the "No products found" message container */
+}
+</style>

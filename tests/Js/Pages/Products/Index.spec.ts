@@ -2,6 +2,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
+// import { useProductFilterStore } from '@/Stores/useProductFilterStore';
+// import { router } from '@inertiajs/vue3';
+// import { route } from 'ziggy-js'; // Mock this
 
 import { defineComponent, h } from 'vue'; // Added PropType for more specific prop typing
 import type { PropType } from 'vue';
@@ -13,50 +16,93 @@ import { ICategory, IPaginatedProducts, IPaginationLink, IFilterState, IProduct 
 
 // Mock Inertia and Ziggy
 // It's crucial to mock dependencies used by IndexPage or its children
-vi.mock('@inertiajs/vue3', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@inertiajs/vue3')>();
-  return {
-    ...actual,
-    usePage: vi.fn(() => ({
-      props: { // Provide minimal necessary props that IndexPage or its layout might expect
-        auth: { user: { name: 'Test User' } }, // Example
-        errors: {},
-        flash: {},
-        // Add other props if your component/layout depends on them
-      },
-      component: 'Products/Index',
-      url: '/products',
-      version: 'test-version',
-    })),
-    router: {
-      get: vi.fn(),
-      post: vi.fn(),
-      put: vi.fn(),
-      delete: vi.fn(),
-      patch: vi.fn(),
-      reload: vi.fn(),
-      remember: vi.fn(),
-      restore: vi.fn(),
-      replace: vi.fn(),
-      visit: vi.fn(),
+vi.mock('@inertiajs/vue3', () => ({ // MODIFIED: Removed async (importOriginal) and ...actual
+  usePage: vi.fn(() => ({
+    props: { // Provide minimal necessary props that IndexPage or its layout might expect
+      auth: { user: { name: 'Test User' } }, // Example
+      errors: {},
+      flash: {},
+      // Add other props if your component/layout depends on them
     },
-    Link: defineComponent({ // Simple stub for Link
-      name: 'Link',
-      props: ['href'],
-      render() { return h('a', { href: this.href }, this.$slots.default ? this.$slots.default() : []); }
-    }),
-    Head: defineComponent({ // Simple stub for Head
-        name: 'Head',
-        render() { return h('div', {}, this.$slots.default ? this.$slots.default() : []); } // Render slot in a div
-    }),
-  };
-});
+    component: 'Products/Index',
+    url: '/products',
+    version: 'test-version',
+  })),
+  router: { // Mock for router, used by useProductFilterStore
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    patch: vi.fn(),
+    reload: vi.fn(),
+    remember: vi.fn(),
+    restore: vi.fn(),
+    replace: vi.fn(),
+    visit: vi.fn(),
+  },
+  Link: defineComponent({ // Simple stub for Link
+    name: 'Link',
+    props: ['href'],
+    render() { return h('a', { href: this.href }, this.$slots.default ? this.$slots.default() : []); }
+  }),
+  Head: defineComponent({ // Simple stub for Head, used by IndexPage
+      name: 'Head',
+      render() { return h('div', {}, this.$slots.default ? this.$slots.default() : []); } // Render slot in a div
+  }),
+  // IMPORTANT: If other exports from '@inertiajs/vue3' are used by your application code
+  // (e.g., in layouts or other components indirectly used by IndexPage),
+  // they must also be explicitly mocked here.
+}));
+
+// vi.mock('@inertiajs/vue3', async (importOriginal) => {
+//   const actual = await importOriginal<typeof import('@inertiajs/vue3')>();
+//   return {
+//     ...actual,
+//     usePage: vi.fn(() => ({
+//       props: { // Provide minimal necessary props that IndexPage or its layout might expect
+//         auth: { user: { name: 'Test User' } }, // Example
+//         errors: {},
+//         flash: {},
+//         // Add other props if your component/layout depends on them
+//       },
+//       component: 'Products/Index',
+//       url: '/products',
+//       version: 'test-version',
+//     })),
+//     router: {
+//       get: vi.fn(),
+//       post: vi.fn(),
+//       put: vi.fn(),
+//       delete: vi.fn(),
+//       patch: vi.fn(),
+//       reload: vi.fn(),
+//       remember: vi.fn(),
+//       restore: vi.fn(),
+//       replace: vi.fn(),
+//       visit: vi.fn(),
+//     },
+//     Link: defineComponent({ // Simple stub for Link
+//       name: 'Link',
+//       props: ['href'],
+//       render() { return h('a', { href: this.href }, this.$slots.default ? this.$slots.default() : []); }
+//     }),
+//     Head: defineComponent({ // Simple stub for Head
+//         name: 'Head',
+//         render() { return h('div', {}, this.$slots.default ? this.$slots.default() : []); } // Render slot in a div
+//     }),
+//   };
+// });
 
 vi.mock('ziggy-js', () => ({
   default: vi.fn((name?: string) => `mocked.route.${name || 'unnamed'}`),
   route: vi.fn((name?: string) => `mocked.route.${name || 'unnamed'}`),
 }));
 
+vi.mock('/images/snap-svg-seeklogo.svg', () => {
+  return {
+    default: 'mocked-svg-logo-path.svg' // Provides a mock path for the SVG
+  };
+});
 
 // Define the test suite for ProductFilters.vue
 describe('Pages/Products/Index.vue', () => {
@@ -251,3 +297,70 @@ describe('Pages/Products/Index.vue', () => {
     // expect(noProductsMessage.text()).toContain('No products found matching your criteria.'); // Or the exact text
   });
 });
+
+// describe('useProductFilterStore', () => {
+//   beforeEach(() => {
+//     setActivePinia(createPinia());
+//     vi.clearAllMocks(); // Clear mocks before each test
+//   });
+
+//   it('initializes with default filters and not loading', () => {
+//     const store = useProductFilterStore();
+//     expect(store.filters).toEqual({
+//       name: '',
+//       category_id: undefined,
+//       status: '',
+//     });
+//     expect(store.isLoading).toBe(false);
+//     expect(store.currentFilters).toEqual(store.filters);
+//     expect(store.isLoadingStatus).toBe(false);
+//   });
+
+//   it('initializeFilters updates the filters state', () => {
+//     const store = useProductFilterStore();
+//     const newFilters = { name: 'Test', category_id: 1, status: 'active' };
+//     store.initializeFilters(newFilters);
+//     expect(store.filters).toEqual(newFilters);
+//   });
+
+//   it('resetFilters resets filters and calls fetchProducts', () => {
+//     const store = useProductFilterStore();
+//     store.filters = { name: 'Old', category_id: 2, status: 'inactive' }; // Set some initial state
+//     const fetchProductsSpy = vi.spyOn(store, 'fetchProducts');
+
+//     store.resetFilters();
+
+//     expect(store.filters).toEqual({ name: '', category_id: undefined, status: '' });
+//     expect(fetchProductsSpy).toHaveBeenCalledWith({ preserveScroll: true });
+//   });
+
+//   it('fetchProducts calls router.get with correct parameters and manages loading state', async () => {
+//     const store = useProductFilterStore();
+//     store.filters = { name: 'Laptop', category_id: 1, status: 'active' };
+//     const page = 2;
+
+//     // Simulate router.get behavior for onSuccess/onError/onFinish
+//     (router.get as any).mockImplementation((_url, _data, options) => {
+//       options.onSuccess?.();
+//       options.onFinish?.();
+//     });
+
+//     await store.fetchProducts({ page, preserveScroll: true });
+
+//     expect(store.isLoading).toBe(false); // Should be false after onFinish
+//     expect(route).toHaveBeenCalledWith('products.index');
+//     expect(router.get).toHaveBeenCalledWith(
+//       'mocked.route.products.index',
+//       { ...store.filters, page },
+//       expect.objectContaining({
+//         preserveState: true,
+//         preserveScroll: true,
+//         replace: true,
+//       })
+//     );
+//     // Check setLoading calls if needed by spying on it
+//   });
+
+//   // Add tests for updateAndFetchFilters (debouncing might require vi.useFakeTimers),
+//   // handlePageChange, and getters.
+// });

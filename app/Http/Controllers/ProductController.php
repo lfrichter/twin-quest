@@ -7,7 +7,6 @@ use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -64,7 +63,7 @@ class ProductController extends Controller
 
         $activeFilters = [
             'name' => $validated['name'] ?? null,
-            'category_id' => $validated['category_id'] ?? null,
+            'category_id' => isset($validated['category_id']) ? (int) $validated['category_id'] : null,
             'status' => $validated['status'] ?? null,
         ];
 

@@ -20,7 +20,7 @@ describe('Registration Creation (Store Endpoint)', function () {
 
         $response = $this->post(route('registrations.store'), $registrationData);
 
-        $response->assertRedirect(route('registrations.create'));
+        $response->assertRedirect(route('main.index'));
         $response->assertSessionHas('success', 'Registration successful!');
 
         $this->assertDatabaseHas('registrations', [
@@ -93,8 +93,10 @@ describe('Email Validation Endpoint (/api/validate-email)', function () {
 
         $response = $this->postJson(route('api.validate.email'), ['email' => 'taken@example.com']);
 
-        $response->assertOk();
-        $response->assertJson(['exists' => true]);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'email' => 'This email address is already taken.',
+        ]);
     });
 
     it('should return exists false if email is not registered', function () {
