@@ -1,4 +1,4 @@
-# 🚀 Laravel & Vue Full-Stack Integration Challenge
+# Twin Quest 🚀 for `LVTPP` Stack Challenge
 
 [![PHP](https://img.shields.io/badge/PHP-^8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-^12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/)
@@ -11,8 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-^3.4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 ## 📋 Overview
-
-This project is a Full-Stack integration challenge using Laravel and Vue.js, with the goal of demonstrating the ability to build a cohesive and modern application. The development is guided by two main user stories:
+This project is a Full-Stack integration challenge using `LVTPP` Laravel, Vue, Typescript, Pinia and Pest with the goal of demonstrating the ability to build a cohesive and modern application. The development is guided by two main user stories:
 
 1.  **STORY-001**: Implementation of a resource listing ("Products") with filterable API endpoints, pagination, and reactive UI updates.
 2.  **STORY-002**: Implementation of a form ("Registrations") with real-time validation on the frontend and integration with robust backend validation, followed by data persistence.
