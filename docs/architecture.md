@@ -4,48 +4,75 @@ This document outlines the key architectural decisions made for this project, ba
 
 ## 1. Technical Stack
 
-The chosen technology stack is:
+The technology stack was defined based on the project’s technical requirements, with some upgrades to leverage the latest stable releases and improve code maintainability:
 
-*   **Backend Framework:** Laravel 12
-    *   *Justification:* A robust PHP framework with a mature ecosystem, facilitating rapid development of RESTful APIs and server-side logic.
-*   **Frontend Framework:** Vue.js 3 (Composition API with TypeScript)
-    *   *Justification:* Selected for its reactivity, flexibility, and the modern Composition API, which allows for more cohesive and reusable logical organization. TypeScript is included to add static typing, improving code robustness, facilitating maintenance, and reducing compile-time errors.
-*   **Backend-Frontend Integration:** Inertia.js 1.0
-    *   *Justification:* Used to create modern, server-driven single-page applications (SPAs), combining Laravel's power on the backend with Vue.js's reactivity on the frontend without the complexity of building and consuming separate APIs for main navigation.
-*   **Database:** PostgreSQL 15
-    *   *Justification:* A powerful, open-source object-relational database management system known for its reliability and robustness.
-*   **Frontend State Management:** Pinia 2
-    *   *Justification:* The official state management library for Vue.js, chosen for its simplicity, integration with Vue DevTools, and full support for the Composition API.
-*   **PHP Testing Framework:** Pest 2
-    *   *Justification:* An elegant, developer-focused PHP testing framework that provides an expressive and enjoyable testing experience for Laravel.
+* **Backend Framework:** Laravel 12
+  *While the technical requirement specified Laravel 10, I opted for the latest stable version, Laravel 12, to benefit from enhanced features, long-term support, and the most up-to-date framework improvements for backend development.*
 
-This technology stack was chosen to assess proficiency in integrating modern and efficient technologies for full-stack development, focusing on productivity, performance, and maintainability.
+* **Frontend Framework:** Vue.js 3 (Composition API with TypeScript)
+  *The requirements indicated familiarity with Vue.js but did not mandate the use of the Composition API. I adopted the Composition API to achieve more modular, readable, and maintainable code. In addition, TypeScript was integrated into the stack to provide static typing, which increases code robustness and reduces compile-time errors.*
+
+* **Backend-Frontend Integration:** Inertia.js 1.0
+  *Inertia.js 1.0 was used, according to project guidelines, to enable a server-driven single-page application architecture, combining the strengths of Laravel on the backend and Vue.js on the frontend, while simplifying API interactions.*
+
+* **Database:** PostgreSQL 16
+  *Although PostgreSQL 15 was required, I chose to use the more recent PostgreSQL 16 to benefit from the latest performance improvements and features, ensuring even greater reliability for the data layer.*
+
+* **Frontend State Management:** Pinia 2
+  *Pinia 2, the official state management library for Vue.js, was selected in line with the project's technical direction, providing a simple API, seamless integration with the Composition API, and full support for Vue DevTools.*
+
+* **PHP Testing Framework:** Pest 2
+  *Pest 2 was used as required, offering an expressive and developer-friendly testing framework for Laravel.*
+
+In summary, the selected stack was guided by the project’s technical requirements, with strategic upgrades and enhancements—such as Laravel 12, PostgreSQL 16, the Vue Composition API and Typescript — to ensure a modern, maintainable, and robust development environment.
+
+
+Claro! Aqui está a estrutura revisada com a inclusão dos testes Vitest em `tests/Js/` e dos arquivos de documentação:
+
 
 ## 2. Recommended Directory Structure
 
-The directory structure will follow standard Laravel and Vue.js conventions:
+The directory structure follows established Laravel, Vue.js, and Inertia.js best practices:
 
-*   **Laravel:**
-    *   `app/Http/Controllers/`: Controllers for handling HTTP requests.
-    *   `app/Http/Requests/`: Form Requests for input data validation.
-    *   `app/Http/Resources/`: API Resources for transforming Eloquent models and collections into JSON.
-    *   `app/Models/`: Eloquent models for database interaction.
-    *   `app/Providers/`: Service Providers for registering services.
-    *   `app/Services/`: Service classes for encapsulating business logic.
-    *   `app/Repositories/`: (Optional, if Repository pattern is adopted) Classes for abstracting data access logic.
-    *   `database/migrations/`: Database migrations.
-    *   `database/seeders/`: Seeders for populating the database.
-    *   `routes/api.php`: API route definitions.
-    *   `routes/web.php`: Web route definitions (managed by Inertia.js).
-    *   `resources/js/Pages/`: Vue.js page components (rendered by Inertia).
-    *   `resources/js/Components/`: Reusable Vue.js components.
-    *   `resources/js/Layouts/`: Vue.js layouts for pages.
-    *   `resources/js/Store/`: Pinia stores for global state management.
-    *   `resources/js/Composables/`: Reusable Composition API functions.
-    *   `tests/Feature/`: Feature tests (Pest).
-    *   `tests/Unit/`: Unit tests (Pest).
-*   **Vue.js (within `resources/js/`):**
-    *   The structure will be organized into `Pages`, `Components`, `Layouts`, `Store` (for Pinia), and `Composables`, following best practices for Inertia.js applications.
+### **Laravel**
+*   `app/Http/Controllers/`: Controllers to handle HTTP requests.
+*   `app/Http/Requests/`: Form Requests for input data validation.
+*   `app/Http/Resources/`: API Resources to transform Eloquent models/collections into JSON.
+*   `app/Models/`: Eloquent models for database interactions.
+*   `app/Providers/`: Service Providers for registering application services.
+*   `app/Services/`: Service classes that encapsulate business logic.
+*   `app/Repositories/`: (Optional, if Repository pattern is applied) Classes to abstract data access logic.
+
+*   `database/migrations/`: Database migration files.
+*   `database/seeders/`: Seeders for populating tables with test or initial data.
+
+*   `routes/api.php`: API route definitions.
+*   `routes/web.php`: Web route definitions (used together with Inertia.js).
+
+### **Frontend (`resources/js/`)**
+*   `Pages/`: Vue.js page components rendered by Inertia.
+*   `Components/`: Reusable Vue.js components.
+*   `Layouts/`: Vue.js layouts to wrap pages.
+*   `Store/`: Pinia stores for global state management.
+*   `Composables/`: Reusable Composition API logic (custom hooks).
+
+### **Testing**
+*   `tests/Feature/`: Feature and integration tests (using Pest).
+*   `tests/Unit/`: Unit tests (using Pest).
+*   `tests/Js/`: Frontend unit and integration tests using Vitest
+    *   Example:
+        *   `tests/Js/Components/Products/ProductFilters.spec.ts`
+        *   `tests/Js/Pages/Products/Index.spec.ts`
+
+### **Documentation**
+*   `docs/architecture.md`: Project architecture documentation.
+*   `docs/api.md`: API documentation and reference.
+
+**Note:**
+- The structure within `resources/js/` is organized according to best practices for Inertia.js and Vue.js projects to promote maintainability and reusability.
+- The use of the `app/Repositories/` directory is optional and depends on the application of the Repository pattern.
+- All documentation is centrally located in the `docs/` directory for easy access.
+
 
 ## 3. Design Patterns to be Implemented
 
