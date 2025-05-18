@@ -1,19 +1,13 @@
+# Twin Quest 🚀 for `LVTPP` Stack Challenge
+
 [![PHP](https://img.shields.io/badge/PHP-^8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
-
 [![Laravel](https://img.shields.io/badge/Laravel-^12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com/)
-
 [![Vue.js](https://img.shields.io/badge/Vue.js-^3.3.13-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org/)
-
 [![TypeScript](https://img.shields.io/badge/TypeScript-^5.8.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-
 [![Inertia.js](https://img.shields.io/badge/Inertia.js-^2.0-6675e0?style=for-the-badge&logo=inertia&logoColor=white)](https://inertiajs.com/)
-
 [![Pinia](https://img.shields.io/badge/Pinia-^3.0.2-ffd859?style=for-the-badge&logo=pinia&logoColor=black)](https://pinia.vuejs.org/)
-
 [![Pest](https://img.shields.io/badge/Pest-^3.8-f9322c?style=for-the-badge&logo=php&logoColor=white)](https://pestphp.com/)
-
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-^3.4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 
