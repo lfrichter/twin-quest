@@ -97,6 +97,7 @@ The directory structure follows established Laravel, Vue.js, and Inertia.js best
 5.  **Inertia Response:** The Controller returns an Inertia response, passing data (props) to a specific Vue.js page component. Laravel API Resources can be used here to format the data.
 6.  **Vue.js Rendering:** Inertia.js on the client-side receives the data and dynamically updates the relevant Vue.js component or loads a new page/component without a full page reload.
 7.  **State Management (Pinia):** Global application state (e.g., user data, active filters) is managed by Pinia stores, which can be accessed and modified by any Vue.js component. Changes in Pinia state can reactively update the UI.
+    - In the context of Story 1 (Resource Listing System - Products): Pinia is used to manage the state of filters (such as name, category, status) and pagination in the product list. This allows maintaining the state of the filters and the current page in a centralized and reactive manner. When the user interacts with the filter controls or navigates between pages, the corresponding state in Pinia is updated, which in turn triggers the logic to fetch the filtered/paginated data from the backend and update the product list view.
 8.  **Component Interaction:** Vue.js components can have local state (using `ref` or `reactive`) and communicate with parent/child components via `props` and `emits`.
 
 ## 5. Caching, Performance, and Security Strategies
