@@ -3,5 +3,4 @@
 export interface ICategory {
   id: number;
   name: string;
-  // Add other fields if necessary
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // Add strict types declaration
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -14,12 +14,12 @@ use Inertia\Response as InertiaResponse;
 
 class ProductController extends Controller
 {
-    protected ProductService $productService; // Add this property
+    protected ProductService $productService;
 
     /**
      * Constructor to inject ProductService.
      */
-    public function __construct(ProductService $productService) // Add constructor
+    public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
     }
